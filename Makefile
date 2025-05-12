@@ -1,16 +1,20 @@
 VGO=go # Set to vgo if building in Go 1.10
+BIN_DIR=build
 BINARY_NAME=ethsign
 SRC_GOFILES := $(shell find . -name '*.go' -print)
 .DELETE_ON_ERROR:
 
-all: build test
+all: build
 test: deps
 		$(VGO) test  ./... -cover -coverprofile=coverage.txt -covermode=atomic
 ethsign: ${SRC_GOFILES}
-		$(VGO) build -o ${BINARY_NAME} -ldflags "-X main.buildDate=`date -u +\"%Y-%m-%dT%H:%M:%SZ\"` -X main.buildVersion=$(BUILD_VERSION)" -tags=prod -v
+		$(VGO) build -o ${BIN_DIR}/${BINARY_NAME} \
+			-ldflags "-X main.buildDate=`date -u +\"%Y-%m-%dT%H:%M:%SZ\"` \
+			-X main.buildVersion=$(BUILD_VERSION)" \
+			-tags=prod -v
 build: ethsign
-clean: 
+clean:
 		$(VGO) clean
-		rm -f ${BINARY_NAME}
+		rm -f ${BIN_DIR}/${BINARY_NAME}
 deps:
 		$(VGO) get

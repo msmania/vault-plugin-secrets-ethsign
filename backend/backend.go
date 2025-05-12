@@ -58,12 +58,16 @@ type backend struct {
 	*framework.Backend
 }
 
-func (b *backend) pathExistenceCheck(ctx context.Context, req *logical.Request, data *framework.FieldData) (bool, error) {
-	out, err := req.Storage.Get(ctx, req.Path)
+func (b *backend) pathExistenceCheck(
+	ctx context.Context,
+	req *logical.Request,
+	data *framework.FieldData,
+) (bool, error) {
+	from := data.Get("name").(string)
+	out, err := b.retrieveAccount(ctx, req, from)
 	if err != nil {
 		b.Logger().Error("Path existence check failed", err)
 		return false, fmt.Errorf("existence check failed: %v", err)
 	}
-
 	return out != nil, nil
 }

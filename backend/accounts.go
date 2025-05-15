@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
@@ -97,7 +98,7 @@ func (b *backend) createAccount(ctx context.Context, req *logical.Request, data 
 	hash.Write(publicKeyBytes[1:])
 	address := hexutil.Encode(hash.Sum(nil)[12:])
 
-	accountPath := fmt.Sprintf("accounts/%s", address)
+	accountPath := strings.ToLower(fmt.Sprintf("accounts/%s", address))
 
 	accountJSON := &Account{
 		Address:    address,
@@ -189,7 +190,7 @@ func (b *backend) retrieveAccount(ctx context.Context, req *logical.Request, add
 		if address[:2] != "0x" {
 			address = "0x" + address
 		}
-		path = fmt.Sprintf("accounts/%s", address)
+		path = strings.ToLower(fmt.Sprintf("accounts/%s", address))
 		entry, err := req.Storage.Get(ctx, path)
 		if err != nil {
 			b.Logger().Error("Failed to retrieve the account by address", "path", path, "error", err)

@@ -6,12 +6,13 @@ SRC_GOFILES := $(shell find . -name '*.go' -print)
 
 all: build
 test: deps
-		$(VGO) test  ./... -cover -coverprofile=coverage.txt -covermode=atomic
+	$(VGO) test  ./... -cover -coverprofile=coverage.txt -covermode=atomic
 ethsign: ${SRC_GOFILES}
-		$(VGO) build -o ${BIN_DIR}/${BINARY_NAME} \
-			-ldflags "-X main.buildDate=`date -u +\"%Y-%m-%dT%H:%M:%SZ\"` \
-			-X main.buildVersion=$(BUILD_VERSION)" \
-			-tags=prod -v
+	# Disable CGO to run on a Alpine-based system
+	CGO_ENABLED=0 $(VGO) build -o ${BIN_DIR}/${BINARY_NAME} \
+		-ldflags "-X main.buildDate=`date -u +\"%Y-%m-%dT%H:%M:%SZ\"` \
+		-X main.buildVersion=$(BUILD_VERSION)" \
+		-tags=prod -v
 build: ethsign
 clean:
 		$(VGO) clean
